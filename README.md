@@ -18,8 +18,8 @@ Animated map for visualization of traffic accidents in Qatar.
 ### Prerequisites
 Ensure you have the following installed:
 - Python (>=3.8)
-- Jupyter Notebook
+- Visual Studio Code
 - R (for `ggmap` visualization)
-- Required Python libraries: `pandas`, `numpy`, `matplotlib`, `seaborn`, `tensorflow`, `geopandas`
-- Required R packages: `ggplot2`, `ggmap`
+- Required Python libraries: `pandas`, `numpy`, `tensorflow`, `sklearn`
+- Required R packages: `ggplot2`, `ggmap`, `gganimate`
 
