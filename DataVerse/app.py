@@ -5,7 +5,7 @@ from pipeline import load_pipeline_and_predict
 app = Flask(__name__)
 
 # Load department names
-df = pd.read_csv("/Users/rsoedarnadi/Desktop/DataVerse/Traffic_Data_Department_Total.csv")
+df = pd.read_csv("/Users/rsoedarnadi/Documents/GitHub/Datathon-Dataverse/DataVerse/Traffic_Data_Department_Total.csv")
 departments = sorted(df["Department"].unique())  # Assuming the original names are stored
 
 @app.route("/")

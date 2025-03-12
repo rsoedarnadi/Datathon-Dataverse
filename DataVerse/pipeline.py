@@ -4,12 +4,12 @@ import numpy as np
 import pandas as pd
 
 # Load the preprocessing pipeline and model
-label_encoder = joblib.load("/Users/rsoedarnadi/Desktop/DataVerse/encoder.pkl")
-scaler = joblib.load("/Users/rsoedarnadi/Desktop/DataVerse/scaler.pkl")
-model = tf.keras.models.load_model("/Users/rsoedarnadi/Desktop/DataVerse/traffic.h5")
+label_encoder = joblib.load("/Users/rsoedarnadi/Documents/GitHub/Datathon-Dataverse/DataVerse/encoder.pkl")
+scaler = joblib.load("/Users/rsoedarnadi/Documents/GitHub/Datathon-Dataverse/DataVerse/scaler.pkl")
+model = tf.keras.models.load_model("/Users/rsoedarnadi/Documents/GitHub/Datathon-Dataverse/DataVerse/traffic.h5")
 
 # Load dataset for reference
-df = pd.read_csv("/Users/rsoedarnadi/Desktop/DataVerse/Traffic_Data_Department_Total.csv")
+df = pd.read_csv("/Users/rsoedarnadi/Documents/GitHub/Datathon-Dataverse/DataVerse/Traffic_Data_Department_Total.csv")
 latest_year = df["Year"].max()
 
 SEQ_LENGTH = 10  # Make sure this matches your training sequence length
