@@ -14,6 +14,9 @@ Python notebooks for regression analysis, forecasting, and data preparation. Vis
 ### 📂 Visualization
 Animated map for visualization of traffic accidents in Qatar.
 
+### 📂 DataVerse
+Flask app of Qatar traffic accident forecasts by department with interactive map.
+
 ## Getting Started
 ### Prerequisites
 Ensure you have the following installed:
