@@ -4,13 +4,14 @@ from pipeline import load_pipeline_and_predict
 
 app = Flask(__name__)
 
-# Load department names
-df = pd.read_csv("/Users/rsoedarnadi/Documents/GitHub/Datathon-Dataverse/DataVerse/Traffic_Data_Department_Total.csv")
-departments = sorted(df["Department"].unique())  # Assuming the original names are stored
+# Load department names and years
+df = pd.read_csv("/Users/rsoedarnadi/Documents/GitHub/Datathon-Dataverse/DataVerse/Traffic_Data_Department_Total.csv")  # Update the path to be relative
+departments = sorted(df["Department"].unique())
+years = sorted(df["Year"].unique())
 
 @app.route("/")
 def home():
-    return render_template("index.html", departments=departments)
+    return render_template("index.html", departments=departments, years=years)
 
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -35,6 +36,12 @@ def predict():
     }
 
     return jsonify(results_with_coordinates)
+
+@app.route("/historical", methods=["GET"])
+def historical_data():
+    year = int(request.args.get("year"))
+    historical_data = df[df["Year"] == year].to_dict(orient="records")
+    return jsonify(historical_data)
 
 if __name__ == "__main__":
     app.run(debug=True)

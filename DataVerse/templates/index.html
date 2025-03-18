@@ -1,181 +1,235 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <meta name="description" content="" />
-        <meta name="author" content="" />
-        <title>DataVerse</title>
-        <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet" />
-        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-        <style>
-            #map {
-                height: 600px;
-            }
-        </style>
-    </head>
-    <body class="sb-nav-fixed">
-        <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-            <!-- Navbar Brand-->
-            <a class="navbar-brand ps-3" href="index.html">DataVerse</a>
-            <!-- Sidebar Toggle-->
-            <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
-            <!-- Navbar Search-->
-            <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
-                <div class="input-group">
-                    <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
-                    <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traffic Data Visualization</title>
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet" />
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        body {
+            background-color: #ECECEC;
+        }
+        .sb-sidenav {
+            background-color: #12239E;
+        }
+        #map, #historical-map {
+            height: 600px;
+        }
+    </style>
+</head>
+<body class="sb-nav-fixed">
+    <nav class="sb-topnav navbar navbar-expand navbar-dark" style="background-color: #12239E;">
+        <!-- Navbar Brand-->
+        <a class="navbar-brand ps-3" href="index.html">DataVerse</a>
+        <!-- Sidebar Toggle-->
+        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+    </nav>
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav">
+            <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                <div class="sb-sidenav-menu">
+                    <div class="nav">
+                        <div class="sb-sidenav-menu-heading">Core</div>
+                        <a class="nav-link" href="index.html">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            Dashboard
+                        </a>
+                    </div>
                 </div>
-            </form>
-            <!-- Navbar-->
-            <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#!">Settings</a></li>
-                        <li><a class="dropdown-item" href="#!">Activity Log</a></li>
-                        <li><hr class="dropdown-divider" /></li>
-                        <li><a class="dropdown-item" href="#!">Logout</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </nav>
-        <div id="layoutSidenav">
-            <div id="layoutSidenav_nav">
-                <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
-                    <div class="sb-sidenav-menu">
-                        <div class="nav">
-                            <div class="sb-sidenav-menu-heading">Core</div>
-                            <a class="nav-link" href="index.html">
-                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                                Dashboard
-                            </a>
-                        </div>
-                    </div>
-                </nav>
-            </div>
-            <div id="layoutSidenav_content">
-                <main>
-                    <div class="container-fluid px-4">
-                        <h1 class="mt-4">Dashboard</h1>
-                        <ol class="breadcrumb mb=4">
-                            <li class="breadcrumb-item active">Dashboard</li>
-                        </ol>
-                        <div class="row">
-                            <div class="col-xl-6">
-                                <div class="card mb-4">
-                                    <div class="card-header">
-                                        <i class="fas fa-map-marked-alt me-1"></i>
-                                        Traffic Accident Prediction Map
-                                    </div>
-                                    <div class="card-body">
-                                        <div id="map" style="height: 600px;"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xl-6">
-                                <div class="card mb-4">
-                                    <div class="card-header">
-                                        <i class="fas fa-chart-bar me-1"></i>
-                                        Predicted Traffic Accidents
-                                    </div>
-                                    <div class="card-body">
-                                        <label for="year">Select Year:</label>
-                                        <input type="number" id="year" min="2024" max="2026" value="2024" class="form-control mb-3">
-                                        <button onclick="predict()" class="btn btn-primary">Predict</button>
-                                        <div id="result" class="mt-3"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </main>
-                <footer class="py-4 bg-light mt-auto">
-                    <div class="container-fluid px-4">
-                        <div class="d-flex align-items-center justify-content-between small">
-                            <div class="text-muted">Copyright &copy; Your Website 2023</div>
-                            <div>
-                                <a href="#">Privacy Policy</a>
-                                &middot;
-                                <a href="#">Terms &amp; Conditions</a>
-                            </div>
-                        </div>
-                    </div>
-                </footer>
-            </div>
+            </nav>
         </div>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-        <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
-        <script>
-            let map;
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid px-4">
+                    <h1 class="mt-4">Dashboard</h1>
+                    <ol class="breadcrumb mb-4">
+                        <li class="breadcrumb-item active">Interactive visualization of traffic accidents forecasting by traffic department using Bidirectional LSTM (MAPE=0.03)</li>
+                    </ol>
+                    <div class="row">
+                        <div class="col-xl-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <i class="fas fa-map-marked-alt me-1"></i>
+                                    Traffic Accident Prediction Map
+                                </div>
+                                <div class="card-body">
+                                    <label for="year">Select Year:</label>
+                                    <input type="number" id="year" min="2020" max="2026" value="2024" class="form-control mb-3">
+                                    <button onclick="predict()" class="btn btn-primary">Predict</button>
+                                    <div id="map" style="height: 600px;"></div>
+                                    <div id="result" class="mt-3"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <i class="fas fa-chart-bar me-1"></i>
+                                    Historical Traffic Accidents
+                                </div>
+                                <div class="card-body">
+                                    <label for="historical-year">Select Year:</label>
+                                    <select id="historical-year" class="form-control mb-3">
+                                        {% for year in range(2011, 2024) %}
+                                            <option value="{{ year }}">{{ year }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button onclick="loadHistoricalData()" class="btn btn-secondary">Load Historical Data</button>
+                                    <div id="historical-map" style="height: 600px;"></div>
+                                    <div id="historical-result" class="mt-3"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <footer class="py-4 bg-light mt-auto">
+                <div class="container-fluid px-4">
+                    <div class="d-flex align-items-center justify-content-between small">
+                        <div class="text-muted">Copyright &copy; Your Website 2023</div>
+                        <div>
+                            <a href="#">Privacy Policy</a>
+                            &middot;
+                            <a href="#">Terms &amp; Conditions</a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+    <script>
+        let map, historicalMap;
+        let max_accident_count = 0;
 
-            function initializeMap() {
-                // Initialize the map and set its view to the specified coordinates
-                map = L.map('map').setView([25.236278675862728, 51.20507504572652], 10);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    maxZoom: 18,
-                }).addTo(map);
+        function initializeMap() {
+            // Initialize the prediction map
+            map = L.map('map').setView([25.236278675862728, 51.20507504572652], 10);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 18,
+            }).addTo(map);
+
+            // Initialize the historical map
+            historicalMap = L.map('historical-map').setView([25.236278675862728, 51.20507504572652], 10);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 18,
+            }).addTo(historicalMap);
+        }
+
+        function getColor(accident_count, max_accident_count) {
+            // Normalize the accident count to range between 0 and 1
+            let ratio = accident_count / max_accident_count;
+            // Calculate the color from yellow to red based on the ratio
+            let red = Math.floor(255 * ratio);
+            let green = 255 - Math.floor(255 * ratio);
+            let blue = 0;
+            return `rgb(${red}, ${green}, ${blue})`;
+        }
+
+        async function fetchMaxAccidentCount(year) {
+            // Fetch historical data to determine the max accident count for color scaling
+            let response = await fetch(`/historical?year=${year}`);
+            let historicalData = await response.json();
+
+            // Update the max accident count based on historical data
+            for (let item of historicalData) {
+                if (item.Accident_Count > max_accident_count) {
+                    max_accident_count = item.Accident_Count;
+                }
             }
 
-            function getColor(accident_count, max_accident_count) {
-                // Normalize the accident count to range between 0 and 1
-                let ratio = accident_count / max_accident_count;
-                // Calculate the color from yellow to red based on the ratio
-                let red = Math.floor(255 * ratio);
-                let green = 255 - Math.floor(255 * ratio);
-                let blue = 0;
-                return `rgb(${red}, ${green}, ${blue})`;
-            }
+            // Fetch predicted data to determine the max accident count for color scaling
+            response = await fetch("/predict", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ year })
+            });
+            let predictedData = await response.json();
 
-            async function predict() {
-                let year = document.getElementById("year").value;
-                
-                let response = await fetch("/predict", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ year: year })
-                });
-                
-                let result = await response.json();
-                let output = "<h3>Predicted Accidents</h3>";
-                
-                // Find the maximum accident count for color scaling
-                let max_accident_count = 0;
-                for (let dept in result) {
-                    for (let item of result[dept]) {
-                        if (item.accident_count > max_accident_count) {
-                            max_accident_count = item.accident_count;
-                        }
+            for (let dept in predictedData) {
+                for (let item of predictedData[dept]) {
+                    if (item.accident_count > max_accident_count) {
+                        max_accident_count = item.accident_count;
                     }
                 }
-                
-                for (let dept in result) {
-                    output += `<h4>Department: ${dept}</h4><ul>`;
-                    for (let item of result[dept]) {
-                        output += `<li>Year ${item.year}: ${item.accident_count.toFixed(2)} (Latitude: ${item.latitude.toFixed(6)}, Longitude: ${item.longitude.toFixed(6)})</li>`;
-                        // Add circle to the map with color based on accident count
-                        L.circle([item.latitude, item.longitude], {
-                            color: 'black',  // Outline color
-                            fillColor: getColor(item.accident_count, max_accident_count),
-                            fillOpacity: 0.8,
-                            radius: 2000  // Increased radius for better visibility
-                        }).addTo(map)
-                            .bindPopup(`<b>${dept}</b><br>Year: ${item.year}<br>Accidents: ${item.accident_count.toFixed(2)}`)
-                            .openPopup();
-                    }
-                    output += "</ul>";
-                }
-                
-                document.getElementById("result").innerHTML = output;
             }
+        }
 
-            window.onload = initializeMap;
-        </script>
-    </body>
+        async function predict() {
+            let year = document.getElementById("year").value;
+            
+            // Fetch the max accident count for color scaling
+            await fetchMaxAccidentCount(year);
+
+            let response = await fetch("/predict", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ year: year })
+            });
+            
+            let result = await response.json();
+            let output = "<h3>Predicted Accidents</h3>";
+            
+            for (let dept in result) {
+                output += `Department: ${dept}<ul>`;
+                for (let item of result[dept]) {
+                    output += `<li>Year ${item.year}: ${item.accident_count.toFixed(2)} (Latitude: ${item.latitude.toFixed(6)}, Longitude: ${item.longitude.toFixed(6)})</li>`;
+                    // Add circle to the map with color based on accident count
+                    L.circle([item.latitude, item.longitude], {
+                        color: getColor(item.accident_count, max_accident_count),  // Outline color
+                        fillColor: getColor(item.accident_count, max_accident_count),
+                        fillOpacity: 0.8,
+                        radius: 2000  // Increased radius for better visibility
+                    }).addTo(map)
+                        .bindPopup(`<b>${dept}</b><br>Year: ${item.year}<br>Accidents: ${item.accident_count.toFixed(2)}`)
+                        .openPopup();
+                }
+                output += "</ul>";
+            }
+            
+            document.getElementById("result").innerHTML = output;
+        }
+
+        async function loadHistoricalData() {
+            let year = document.getElementById("historical-year").value;
+            
+            // Fetch the max accident count for color scaling
+            await fetchMaxAccidentCount(year);
+
+            let response = await fetch(`/historical?year=${year}`);
+            let result = await response.json();
+            let output = "<h3>Historical Accidents</h3><ul>";
+            
+            // Sort the result by department name
+            result.sort((a, b) => a.Department.localeCompare(b.Department));
+
+            for (let item of result) {
+                output += `Department: ${item.Department}<ul>`
+                output += `<li>Year ${item.Year}: ${item.Accident_Count} (Latitude: ${item.Latitude}, Longitude: ${item.Longitude})</li>`;
+                output += "</ul>";
+                // Add circle to the historical map with color based on accident count
+                L.circle([item.Latitude, item.Longitude], {
+                    color: getColor(item.Accident_Count, max_accident_count),  // Outline color
+                    fillColor: getColor(item.Accident_Count, max_accident_count),
+                    fillOpacity: 0.8,
+                    radius: 2000  // Increased radius for better visibility
+                }).addTo(historicalMap)
+                    .bindPopup(`<b>${item.Department}</b><br>Year: ${item.Year}<br>Accidents: ${item.Accident_Count}`)
+                    .openPopup();
+            }
+            document.getElementById("historical-result").innerHTML = output;
+        }
+
+        window.onload = initializeMap;
+    </script>
+</body>
 </html>
